@@ -1,0 +1,29 @@
+.brand {
+  font-size: 1.7rem;
+  font-weight: bold;
+  color: #dc1d1d;
+}
+
+@media (max-width: 768px) {
+  .brand {
+    font-size: 1.4rem;
+  }
+
+  .toggle {
+    font-size: 1rem;
+  }
+
+  .nav {
+    font-size: 0.9rem;
+  }
+
+  .dropdown > * {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 300px) {
+  .brand {
+    font-size: 1rem;
+  }
+}
