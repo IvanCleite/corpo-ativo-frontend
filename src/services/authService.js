@@ -21,3 +21,7 @@ export const loginService = async (cpf, password) => {
   console.log('userWithExpiration: ', userWithExpiration)
   return userWithExpiration ;
 };
+
+export const logoutService = ()=>{
+  sessionStorage.removeItem('user')
+}

@@ -3,8 +3,15 @@ import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import styles from "./Navbar.module.css";
+import { logoutService } from "../services/authService";
+import { useNavigate } from "react-router-dom";
 
 function AppNavbar() {
+  const navigate = useNavigate()
+  const logout = ()=>{
+    logoutService()
+    navigate('/')
+  }
   return (
     <Navbar
       fixed="top"
@@ -35,7 +42,7 @@ function AppNavbar() {
               <NavDropdown.Item href="#">Editar</NavDropdown.Item>
               <NavDropdown.Item href="#">Excluir</NavDropdown.Item>
             </NavDropdown>
-            <Nav.Link href="#">Sair</Nav.Link>
+            <Nav.Link onClick={logout}>Sair</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
