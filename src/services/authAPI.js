@@ -5,5 +5,5 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-export const login = (cpf, password) =>
+export const loginAPI = (cpf, password) =>
   api.post("/auth/login", { cpf, password });
