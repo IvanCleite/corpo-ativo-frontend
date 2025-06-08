@@ -1,10 +1,11 @@
 import { useState, useRef } from "react";
 import LoginPagesContainer from "./LoginPagesContainer";
 import { Form, Button, InputGroup, FloatingLabel } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { loginService } from "../../services/authService";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [cpf, setCpf] = useState("");
   const [password, setPassword] = useState("");
   const [focusedCpf, setFocusedCpf] = useState(true);
@@ -15,7 +16,6 @@ const LoginPage = () => {
   const cpfRef = useRef(null);
   const passwordRef = useRef(null);
 
-  
   document.addEventListener("mousedown", (event) => {
     // Impede interações fora dos campos CPF e senha, evitando ações não intencionais
     if (
@@ -34,14 +34,13 @@ const LoginPage = () => {
     try {
       const response = await loginService(cpf, password);
       console.log("response na loginPage: ", response);
+      navigate("/home");
     } catch (error) {
       console.error(
         "Erro ao buscar usuário:",
         error.response?.data || error.message
       );
-      // alert("Não foi possível acessar o banco de dados. Tente novamente!");
     }
-    console.log('sessionStorage: ', sessionStorage.getItem("user"))
   };
 
   return (
