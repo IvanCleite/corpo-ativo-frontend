@@ -2,22 +2,23 @@ import { useState, useRef } from "react";
 import LoginPagesContainer from "./LoginPagesContainer";
 import { Form, Button, InputGroup, FloatingLabel } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { login } from "../../services/authAPI";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [focusedEmail, setFocusedEmail] = useState(true);
-  const [focusedPassword, setFocusedPassword] = useState(false);
+  const [cpf, setCpf] = useState("");
   const [password, setPassword] = useState("");
+  const [focusedCpf, setFocusedCpf] = useState(true);
+  const [focusedPassword, setFocusedPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const isFormValid =
-    email.trim() !== "" && password.trim() !== "" && password.length >= 2;
-  const emailRef = useRef(null);
+    cpf.trim() !== "" && password.trim() !== "" && password.length >= 2;
+  const cpfRef = useRef(null);
   const passwordRef = useRef(null);
 
   document.addEventListener("mousedown", (event) => {
     if (
-      emailRef.current &&
-      !emailRef.current.contains(event.target) &&
+      cpfRef.current &&
+      !cpfRef.current.contains(event.target) &&
       passwordRef.current &&
       !passwordRef.current.contains(event.target)
     ) {
@@ -27,28 +28,40 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("cpf and password: ", cpf, password);
+    try {
+      const response = await login(cpf, password);
+      console.log("resposta ao login: ", response);
+    } catch (error) {
+      console.error(
+        "Erro ao buscar usuário:",
+        error.response?.data || error.message
+      );
+      alert("Não foi possível acessar o banco de dados. Tente novamente!");
+    }
   };
 
   return (
     <LoginPagesContainer cardTitle="Insira seu dados para Login">
       <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="email">
+        <Form.Group controlId="cpf">
           <FloatingLabel
-            controlId="floatingInputEmail"
-            label="Digite seu e-mail"
+            controlId="floatingInputCpf"
+            label="Digite seu cpf"
             className="text-secondary fst-italic mb-3"
           >
             <Form.Control
               style={{
-                border: focusedEmail ? "1.5px solid rgb(76, 166, 218)" : "",
+                border: focusedCpf ? "1.5px solid rgb(76, 166, 218)" : "",
                 boxShadow: "none",
               }}
-              ref={emailRef}
-              type="email"
+              ref={cpfRef}
+              type="text"
               placeholder=""
-              onChange={(e) => setEmail(e.target.value)}
-              onFocus={() => setFocusedEmail(true)}
-              onBlur={() => setFocusedEmail(false)}
+              onChange={(e) => setCpf(e.target.value)}
+              onFocus={() => setFocusedCpf(true)}
+              onBlur={() => setFocusedCpf(false)}
+              maxLength="14"
               autoFocus
               required
             />
