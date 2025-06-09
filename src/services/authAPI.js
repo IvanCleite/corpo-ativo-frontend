@@ -7,3 +7,6 @@ const api = axios.create({
 
 export const loginAPI = (cpf, password) =>
   api.post("/auth/login", { cpf, password });
+
+export const forgotPasswordAPI = (email) =>
+  api.post("/auth/forgot-password", { email });

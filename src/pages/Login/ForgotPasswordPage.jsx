@@ -8,6 +8,7 @@ import {
   FloatingLabel,
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { forgotPasswordAPI } from "../../services/authAPI";
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
@@ -22,6 +23,8 @@ const ForgotPasswordPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const response = await forgotPasswordAPI(email)
+    console.log('response no forgotPasswordPage: ', response.data)
   };
 
   useEffect(() => {
