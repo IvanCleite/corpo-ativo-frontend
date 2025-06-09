@@ -1,34 +1,33 @@
-import { useState, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import LoginPagesContainer from './LoginPagesContainer.jsx';
-import { resetPasswordAPI } from '../../services/authAPI.js';
-import { Form, Button, InputGroup, FloatingLabel } from 'react-bootstrap';
+import { useState, useRef } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import LoginPagesContainer from './LoginPagesContainer.jsx'
+import { resetPasswordAPI } from '../../services/authAPI.js'
+import { Form, Button, InputGroup, FloatingLabel } from 'react-bootstrap'
 
 const ResetPasswordPage = () => {
-  const { token } = useParams();
-  const navigate = useNavigate();
+  const { token } = useParams()
+  const navigate = useNavigate()
 
-  
-  const [isValidToken, setIsValidToken] = useState(true);
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [focusedNewPassword, setFocusedNewPassword] = useState(true);
-  const [focusedConfirmPassword, setFocusedConfirmPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [newPasswordOk, setNewPasswordOk] = useState(false);
-  const [samePassword, setSamePassword] = useState(false);
-  const [differentPassword, setDifferentPassword] = useState(false);
+  const [isValidToken, setIsValidToken] = useState(true)
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [focusedNewPassword, setFocusedNewPassword] = useState(true)
+  const [focusedConfirmPassword, setFocusedConfirmPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [newPasswordOk, setNewPasswordOk] = useState(false)
+  const [samePassword, setSamePassword] = useState(false)
+  const [differentPassword, setDifferentPassword] = useState(false)
 
-  const [hasNumber, setHasNumber] = useState(false);
-  const [hasCapitalLetter, setHasCapitalLetter] = useState(false);
-  const [hasLowercaseLetter, setHasLowercaseLetter] = useState(false);
-  const [hasSpecialCharacter, setHasSpecialCharacter] = useState(false);
+  const [hasNumber, setHasNumber] = useState(false)
+  const [hasCapitalLetter, setHasCapitalLetter] = useState(false)
+  const [hasLowercaseLetter, setHasLowercaseLetter] = useState(false)
+  const [hasSpecialCharacter, setHasSpecialCharacter] = useState(false)
 
-  const canSave = newPasswordOk && samePassword;
+  const canSave = newPasswordOk && samePassword
 
-  const newPasswordRef = useRef(null);
-  const confirmPasswordRef = useRef(null);
+  const newPasswordRef = useRef(null)
+  const confirmPasswordRef = useRef(null)
 
   // Impede interações fora dos campos de senha, evitando ações não intencionais
   document.addEventListener(
@@ -40,76 +39,84 @@ const ResetPasswordPage = () => {
         confirmPasswordRef.current &&
         !confirmPasswordRef.current.contains(event.target)
       ) {
-        event.preventDefault();
+        event.preventDefault()
       }
     },
     true
-  );
+  )
 
   // Permite validar senha com menos de 6 caracteres
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
       setNewPasswordOk(
-        newPassword.length >= 6 && hasNumber && hasCapitalLetter && hasLowercaseLetter && hasSpecialCharacter
-      );
+        newPassword.length >= 6 &&
+          hasNumber &&
+          hasCapitalLetter &&
+          hasLowercaseLetter &&
+          hasSpecialCharacter
+      )
     }
-  });
+  })
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (newPassword !== confirmPassword) {
-      setSamePassword('As senhas não coincidem');
-      return;
+      setSamePassword('As senhas não coincidem')
+      return
     }
     try {
-      const response = await resetPasswordAPI(token, newPassword);
+      const response = await resetPasswordAPI(token, newPassword)
       if (response.status === 200) {
-        navigate('/');
+        navigate('/')
       } else {
-        setIsValidToken(false);
+        setIsValidToken(false)
       }
     } catch (error) {
-      setSamePassword('Erro ao redefinir a senha');
-      console.error(error);
+      setSamePassword('Erro ao redefinir a senha')
+      console.error(error)
     }
-  };
+  }
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value } = e.target
     if (name === 'newPassword') {
-      setHasNumber(/\d/.test(value));
-      setHasCapitalLetter(/[A-Z]/.test(value));
-      setHasLowercaseLetter(/[a-z]/.test(value));
-      setHasSpecialCharacter(/[!@#$%^&*(),.?":{}|<>]/.test(value));
+      setHasNumber(/\d/.test(value))
+      setHasCapitalLetter(/[A-Z]/.test(value))
+      setHasLowercaseLetter(/[a-z]/.test(value))
+      setHasSpecialCharacter(/[!@#$%^&*(),.?":{}|<>]/.test(value))
       setNewPasswordOk(
-        value.length >= 10 && hasNumber && hasCapitalLetter && hasLowercaseLetter && hasSpecialCharacter
-      );
-      setNewPassword(value);
-      setSamePassword(value === confirmPassword);
+        value.length >= 10 &&
+          hasNumber &&
+          hasCapitalLetter &&
+          hasLowercaseLetter &&
+          hasSpecialCharacter
+      )
+      setNewPassword(value)
+      setSamePassword(value === confirmPassword)
     } else {
-      console.log('confirmPassword: ', value, ' ', value.length);
-      console.log('newPassword: ', newPassword.charAt(value.length - 1));
+      console.log('confirmPassword: ', value, ' ', value.length)
+      console.log('newPassword: ', newPassword.charAt(value.length - 1))
 
-      setDifferentPassword(value.charAt(value.length - 1) !== newPassword.charAt(value.length - 1));
+      setDifferentPassword(value.charAt(value.length - 1) !== newPassword.charAt(value.length - 1))
 
-      setConfirmPassword(value);
-      setSamePassword(newPassword === value);
+      setConfirmPassword(value)
+      setSamePassword(newPassword === value)
     }
-  };
+  }
 
   return isValidToken ? (
-    <LoginPagesContainer cardTitle="Redefinir Senha">
+    <LoginPagesContainer cardTitle='Redefinir Senha'>
       <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3" controlId="newPassword">
+        <Form.Group className='mb-3' controlId='newPassword'>
           <InputGroup>
             <FloatingLabel
-              controlId="floatingInputNewPassword"
-              label="Digite sua nova senha"
-              className="text-secondary fst-italic"
+              controlId='floatingInputNewPassword'
+              label='Digite sua nova senha'
+              className='text-secondary fst-italic'
             >
               <Form.Control
                 ref={newPasswordRef}
-                className="mb-3"
+                className='mb-3'
                 style={{
                   borderRadius: '.4rem',
                   position: 'relative',
@@ -117,10 +124,10 @@ const ResetPasswordPage = () => {
                   border: focusedNewPassword ? '1.5px solid rgb(76, 166, 218)' : '',
                   boxShadow: 'none',
                 }}
-                name="newPassword"
+                name='newPassword'
                 value={newPassword}
                 type={showNewPassword ? 'text' : 'password'}
-                placeholder=""
+                placeholder=''
                 minLength={6}
                 maxLength={10}
                 autoFocus
@@ -146,12 +153,12 @@ const ResetPasswordPage = () => {
           </InputGroup>
         </Form.Group>
         {newPasswordOk && (
-          <Form.Group className="mb-0" controlId="confirmPassword">
+          <Form.Group className='mb-0' controlId='confirmPassword'>
             <InputGroup>
               <FloatingLabel
-                controlId="floatingInputConfirmPassword"
-                label="Confime a senha"
-                className="text-secondary fst-italic"
+                controlId='floatingInputConfirmPassword'
+                label='Confime a senha'
+                className='text-secondary fst-italic'
               >
                 <Form.Control
                   ref={confirmPasswordRef}
@@ -164,10 +171,10 @@ const ResetPasswordPage = () => {
                     color: samePassword ? '#0c6b26' : '#dc3545',
                     marginBottom: differentPassword ? '0px' : '10px',
                   }}
-                  name="confirmPassword"
+                  name='confirmPassword'
                   value={confirmPassword}
                   type={showConfirmPassword ? 'text' : 'password'}
-                  placeholder=""
+                  placeholder=''
                   minLength={6}
                   maxLength={10}
                   autoFocus
@@ -196,24 +203,29 @@ const ResetPasswordPage = () => {
           </Form.Group>
         )}
         {differentPassword && (
-          <p className="text-start ms-2 mb-3 fst-italic text-danger">As senhas devem ser iguais!</p>
+          <p className='text-start ms-2 mb-3 fst-italic text-danger'>As senhas devem ser iguais!</p>
         )}
         {!newPasswordOk && (
-          <div className="ms-1">
-            <p className="text-start text-primary fw-bold ms-2 mb-2 fst-italic">A senha deve conter:</p>
+          <div className='ms-1'>
+            <p className='text-start text-primary fw-bold ms-2 mb-2 fst-italic'>
+              A senha deve conter:
+            </p>
             <p
-              className="text-start ms-4 mb-0 fst-italic"
+              className='text-start ms-4 mb-0 fst-italic'
               style={{
                 color: newPassword.length >= 6 ? '#0c6b26' : '#dc3545',
               }}
             >
               Entre 6 e 10 caracteres
             </p>
-            <p className="text-start ms-4 mb-0 fst-italic" style={{ color: hasNumber ? '#0c6b26' : '#dc3545' }}>
+            <p
+              className='text-start ms-4 mb-0 fst-italic'
+              style={{ color: hasNumber ? '#0c6b26' : '#dc3545' }}
+            >
               Um número
             </p>
             <p
-              className="text-start ms-4 mb-0 fst-italic"
+              className='text-start ms-4 mb-0 fst-italic'
               style={{
                 color: hasCapitalLetter ? '#0c6b26' : '#dc3545',
               }}
@@ -221,7 +233,7 @@ const ResetPasswordPage = () => {
               Uma letra maiúscula
             </p>
             <p
-              className="text-start ms-4 mb-0 fst-italic"
+              className='text-start ms-4 mb-0 fst-italic'
               style={{
                 color: hasLowercaseLetter ? '#0c6b26' : '#dc3545',
               }}
@@ -229,7 +241,7 @@ const ResetPasswordPage = () => {
               Uma letra minúscula
             </p>
             <p
-              className="text-start ms-4 fst-italic"
+              className='text-start ms-4 fst-italic'
               style={{
                 color: hasSpecialCharacter ? '#0c6b26' : '#dc3545',
               }}
@@ -239,12 +251,12 @@ const ResetPasswordPage = () => {
           </div>
         )}
 
-        <Button className="w-100 text-tertiary mt-4 mb-3" type="submit" disabled={!canSave}>
+        <Button className='w-100 text-tertiary mt-4 mb-3' type='submit' disabled={!canSave}>
           Salvar nova senha
         </Button>
       </Form>
     </LoginPagesContainer>
-  ) : null;
-};
+  ) : null
+}
 
-export default ResetPasswordPage;
+export default ResetPasswordPage
