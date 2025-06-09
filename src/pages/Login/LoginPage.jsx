@@ -1,23 +1,22 @@
-import { useState, useRef } from "react";
-import LoginPagesContainer from "./LoginPagesContainer";
-import { Form, Button, InputGroup, FloatingLabel } from "react-bootstrap";
-import { useNavigate, Link } from "react-router-dom";
-import { loginService } from "../../services/authService";
+import { useState, useRef } from 'react';
+import LoginPagesContainer from './LoginPagesContainer';
+import { Form, Button, InputGroup, FloatingLabel } from 'react-bootstrap';
+import { useNavigate, Link } from 'react-router-dom';
+import { loginService } from '../../services/authService';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const [cpf, setCpf] = useState("");
-  const [password, setPassword] = useState("");
+  const [cpf, setCpf] = useState('');
+  const [password, setPassword] = useState('');
   const [focusedCpf, setFocusedCpf] = useState(true);
   const [focusedPassword, setFocusedPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const isFormValid =
-    cpf.trim() !== "" && password.trim() !== "" && password.length >= 2;
+  const isFormValid = cpf.trim() !== '' && password.trim() !== '' && password.length >= 2;
   const cpfRef = useRef(null);
   const passwordRef = useRef(null);
-
-  document.addEventListener("mousedown", (event) => {
-    // Impede interações fora dos campos CPF e senha, evitando ações não intencionais
+  
+  // Impede interações fora dos campos CPF e senha, evitando ações não intencionais
+  document.addEventListener('mousedown', (event) => {
     if (
       cpfRef.current &&
       !cpfRef.current.contains(event.target) &&
@@ -30,16 +29,13 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("cpf and password: ", cpf, password);
+    console.log('cpf and password: ', cpf, password);
     try {
       const response = await loginService(cpf, password);
-      console.log("response na loginPage: ", response);
-      navigate("/home");
+      console.log('response na loginPage: ', response);
+      navigate('/home');
     } catch (error) {
-      console.error(
-        "Erro ao buscar usuário:",
-        error.response?.data || error.message
-      );
+      console.error('Erro ao buscar usuário:', error.response?.data || error.message);
     }
   };
 
@@ -47,15 +43,11 @@ const LoginPage = () => {
     <LoginPagesContainer cardTitle="Insira seu dados para Login">
       <Form onSubmit={handleSubmit}>
         <Form.Group controlId="cpf">
-          <FloatingLabel
-            controlId="floatingInputCpf"
-            label="Digite seu cpf"
-            className="text-secondary fst-italic mb-3"
-          >
+          <FloatingLabel controlId="floatingInputCpf" label="Digite seu cpf" className="text-secondary fst-italic mb-3">
             <Form.Control
               style={{
-                border: focusedCpf ? "1.5px solid rgb(76, 166, 218)" : "",
-                boxShadow: "none",
+                border: focusedCpf ? '1.5px solid rgb(76, 166, 218)' : '',
+                boxShadow: 'none',
               }}
               ref={cpfRef}
               type="text"
@@ -80,15 +72,13 @@ const LoginPage = () => {
                 <Form.Control
                   ref={passwordRef}
                   style={{
-                    borderRadius: ".4rem",
-                    position: "relative",
-                    width: "100%",
-                    border: focusedPassword
-                      ? "1.5px solid rgb(76, 166, 218)"
-                      : "",
-                    boxShadow: "none",
+                    borderRadius: '.4rem',
+                    position: 'relative',
+                    width: '100%',
+                    border: focusedPassword ? '1.5px solid rgb(76, 166, 218)' : '',
+                    boxShadow: 'none',
                   }}
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   placeholder=""
                   minLength={2}
                   onChange={(e) => setPassword(e.target.value)}
@@ -98,31 +88,24 @@ const LoginPage = () => {
                 />
               </FloatingLabel>
               <i
-                className={`bi ${showPassword ? "bi-eye" : "bi-eye-slash"} abs`}
+                className={`bi ${showPassword ? 'bi-eye' : 'bi-eye-slash'} abs`}
                 onClick={() => setShowPassword(!showPassword)}
                 style={{
-                  right: "10px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  color: "#000",
-                  cursor: "pointer",
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#000',
+                  cursor: 'pointer',
                   zIndex: 10,
                 }}
               ></i>
             </InputGroup>
           </div>
         </Form.Group>
-        <Button
-          className="w-100 text-tertiary mt-4 mb-3"
-          type="submit"
-          disabled={!isFormValid}
-        >
+        <Button className="w-100 text-tertiary mt-4 mb-3" type="submit" disabled={!isFormValid}>
           Entrar
         </Button>
-        <Link
-          className="btn text-primary text-center w-100"
-          to="/forgot-password"
-        >
+        <Link className="btn text-primary text-center w-100" to="/forgot-password">
           Esqueci minha senha
         </Link>
       </Form>
