@@ -21,10 +21,15 @@ const ForgotPasswordPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const response = await forgotPasswordAPI(email)
-    console.log('response no forgotPasswordPage: ', response.data)
-    setShow(true)
-    setMessage('Acesse o link no e-mail que enviamos e redefina sua senha')
+    try {
+      await forgotPasswordAPI(email)
+      setShow(true)
+      setMessage('Acesse o link no e-mail que enviamos e redefina sua senha')
+    } catch (error) {
+      console.error('Erro! ', error.response?.data.error || error.message)
+      setShow(true)
+      setMessage(error.response?.data.error || error.message)
+    }
   }
 
   useEffect(() => {

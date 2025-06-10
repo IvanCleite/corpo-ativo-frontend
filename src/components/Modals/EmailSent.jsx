@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom'
 
 export const EmailSent = ({ show, handleClose, message }) => {
   return (
-    <Modal show={show} onHide={handleClose} backdrop='static' centered>
+    <Modal show={show} onHide={handleClose} backdrop='static'>
       <Modal.Body>
-        <p className='text-center fs-3'>{message}</p>
+        <p className='text-center fs-4 mb-0'>{message}</p>
       </Modal.Body>
       <Modal.Footer className='d-flex justify-content-around'>
-        <Link to='/' onClick={handleClose}>
-          Ir para Login
+        <Link to='/forgot-password' onClick={handleClose} className='btn btn-primary'>
+          Fechar
         </Link>
       </Modal.Footer>
     </Modal>
