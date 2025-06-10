@@ -3,8 +3,6 @@ import { loginAPI } from './authAPI.js'
 export const loginService = async (cpf, password) => {
   const response = await loginAPI(cpf, password)
 
-  console.log('response no service: ', response)
-
   if (!response.status === 401) {
     return { status: 401, message: response.message }
   }
