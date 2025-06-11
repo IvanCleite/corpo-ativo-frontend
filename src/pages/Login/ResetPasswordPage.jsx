@@ -3,10 +3,19 @@ import { useParams, useNavigate } from 'react-router-dom'
 import LoginPagesContainer from './LoginPagesContainer.jsx'
 import { resetPasswordAPI } from '../../services/authAPI.js'
 import { Form, Button, InputGroup, FloatingLabel } from 'react-bootstrap'
+import { PasswordReset } from '../../components/Modals/PasswordReset.jsx'
 
 const ResetPasswordPage = () => {
   const { token } = useParams()
   const navigate = useNavigate()
+
+  const [show, setShow] = useState(false)
+  const [message, setMessage] = useState('')
+  const [buttonText, setButtonText] = useState('')
+  const handleClose = () => {
+    setShow(false)
+    navigate('/')
+  } 
 
   const [isValidToken, setIsValidToken] = useState(true)
   const [newPassword, setNewPassword] = useState('')
@@ -66,14 +75,17 @@ const ResetPasswordPage = () => {
     }
     try {
       const response = await resetPasswordAPI(token, newPassword)
-      if (response.status === 200) {
-        navigate('/')
-      } else {
-        setIsValidToken(false)
-      }
+      console.log('response: ', response.data)
+      console.log('passou aqui')
+      setShow(true)
+      setButtonText('/')
+      setMessage('Senha redefinida com sucesso')
+
     } catch (error) {
-      setSamePassword('Erro ao redefinir a senha')
-      console.error(error)
+      setShow(true)
+      setButtonText('/forgot-password')
+      setMessage((error.response?.data.error || error.message) + ', solicite redefinição novamente')
+      console.error('Erro! ', error.response?.data.error || error.message)
     }
   }
 
@@ -105,157 +117,162 @@ const ResetPasswordPage = () => {
   }
 
   return isValidToken ? (
-    <LoginPagesContainer cardTitle='Redefinir Senha'>
-      <Form onSubmit={handleSubmit}>
-        <Form.Group className='mb-3' controlId='newPassword'>
-          <InputGroup>
-            <FloatingLabel
-              controlId='floatingInputNewPassword'
-              label='Digite sua nova senha'
-              className='text-secondary fst-italic'
-            >
-              <Form.Control
-                ref={newPasswordRef}
-                className='mb-3'
-                style={{
-                  borderRadius: '.4rem',
-                  position: 'relative',
-                  width: '100%',
-                  border: focusedNewPassword ? '1.5px solid rgb(76, 166, 218)' : '',
-                  boxShadow: 'none',
-                }}
-                name='newPassword'
-                value={newPassword}
-                type={showNewPassword ? 'text' : 'password'}
-                placeholder=''
-                minLength={6}
-                maxLength={10}
-                autoFocus
-                onChange={handleChange}
-                onFocus={() => setFocusedNewPassword(true)}
-                onBlur={() => setFocusedNewPassword(false)}
-                required
-              />
-            </FloatingLabel>
-            <i
-              className={`bi ${showNewPassword ? 'bi-eye' : 'bi-eye-slash'} abs`}
-              onClick={() => setShowNewPassword(!showNewPassword)}
-              style={{
-                position: 'absolute',
-                right: '10px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: '#000',
-                cursor: 'pointer',
-                zIndex: 10,
-              }}
-            ></i>
-          </InputGroup>
-        </Form.Group>
-        {newPasswordOk && (
-          <Form.Group className='mb-0' controlId='confirmPassword'>
+    <>
+      <LoginPagesContainer cardTitle='Redefinir Senha'>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className='mb-3' controlId='newPassword'>
             <InputGroup>
               <FloatingLabel
-                controlId='floatingInputConfirmPassword'
-                label='Confime a senha'
+                controlId='floatingInputNewPassword'
+                label='Digite sua nova senha'
                 className='text-secondary fst-italic'
               >
                 <Form.Control
-                  ref={confirmPasswordRef}
+                  ref={newPasswordRef}
+                  className='mb-3'
                   style={{
                     borderRadius: '.4rem',
                     position: 'relative',
                     width: '100%',
-                    border: focusedConfirmPassword ? '1.5px solid rgb(76, 166, 218)' : '',
+                    border: focusedNewPassword ? '1.5px solid rgb(76, 166, 218)' : '',
                     boxShadow: 'none',
-                    color: samePassword ? '#0c6b26' : '#dc3545',
-                    marginBottom: differentPassword ? '0px' : '10px',
                   }}
-                  name='confirmPassword'
-                  value={confirmPassword}
-                  type={showConfirmPassword ? 'text' : 'password'}
+                  name='newPassword'
+                  value={newPassword}
+                  type={showNewPassword ? 'text' : 'password'}
                   placeholder=''
                   minLength={6}
                   maxLength={10}
                   autoFocus
                   onChange={handleChange}
-                  onFocus={() => setFocusedConfirmPassword(true)}
-                  onBlur={() => setFocusedConfirmPassword(false)}
+                  onFocus={() => setFocusedNewPassword(true)}
+                  onBlur={() => setFocusedNewPassword(false)}
                   required
                 />
               </FloatingLabel>
-
               <i
-                className={`bi ${showConfirmPassword ? 'bi-eye' : 'bi-eye-slash'} abs`}
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className={`bi ${showNewPassword ? 'bi-eye' : 'bi-eye-slash'} abs`}
+                onClick={() => setShowNewPassword(!showNewPassword)}
                 style={{
-                  pointerEvents: !newPasswordOk ? 'none' : 'auto',
                   position: 'absolute',
                   right: '10px',
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  color: !newPasswordOk ? '#a1a0a0' : '#000',
+                  color: '#000',
                   cursor: 'pointer',
                   zIndex: 10,
                 }}
               ></i>
             </InputGroup>
           </Form.Group>
-        )}
-        {differentPassword && (
-          <p className='text-start ms-2 mb-3 fst-italic text-danger'>As senhas devem ser iguais!</p>
-        )}
-        {!newPasswordOk && (
-          <div className='ms-1'>
-            <p className='text-start text-primary fw-bold ms-2 mb-2 fst-italic'>
-              A senha deve conter:
-            </p>
-            <p
-              className='text-start ms-4 mb-0 fst-italic'
-              style={{
-                color: newPassword.length >= 6 ? '#0c6b26' : '#dc3545',
-              }}
-            >
-              Entre 6 e 10 caracteres
-            </p>
-            <p
-              className='text-start ms-4 mb-0 fst-italic'
-              style={{ color: hasNumber ? '#0c6b26' : '#dc3545' }}
-            >
-              Um número
-            </p>
-            <p
-              className='text-start ms-4 mb-0 fst-italic'
-              style={{
-                color: hasCapitalLetter ? '#0c6b26' : '#dc3545',
-              }}
-            >
-              Uma letra maiúscula
-            </p>
-            <p
-              className='text-start ms-4 mb-0 fst-italic'
-              style={{
-                color: hasLowercaseLetter ? '#0c6b26' : '#dc3545',
-              }}
-            >
-              Uma letra minúscula
-            </p>
-            <p
-              className='text-start ms-4 fst-italic'
-              style={{
-                color: hasSpecialCharacter ? '#0c6b26' : '#dc3545',
-              }}
-            >
-              Um caractere especial
-            </p>
-          </div>
-        )}
+          {newPasswordOk && (
+            <Form.Group className='mb-0' controlId='confirmPassword'>
+              <InputGroup>
+                <FloatingLabel
+                  controlId='floatingInputConfirmPassword'
+                  label='Confime a senha'
+                  className='text-secondary fst-italic'
+                >
+                  <Form.Control
+                    ref={confirmPasswordRef}
+                    style={{
+                      borderRadius: '.4rem',
+                      position: 'relative',
+                      width: '100%',
+                      border: focusedConfirmPassword ? '1.5px solid rgb(76, 166, 218)' : '',
+                      boxShadow: 'none',
+                      color: samePassword ? '#0c6b26' : '#dc3545',
+                      marginBottom: differentPassword ? '0px' : '10px',
+                    }}
+                    name='confirmPassword'
+                    value={confirmPassword}
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    placeholder=''
+                    minLength={6}
+                    maxLength={10}
+                    autoFocus
+                    onChange={handleChange}
+                    onFocus={() => setFocusedConfirmPassword(true)}
+                    onBlur={() => setFocusedConfirmPassword(false)}
+                    required
+                  />
+                </FloatingLabel>
 
-        <Button className='w-100 text-tertiary mt-4 mb-3' type='submit' disabled={!canSave}>
-          Salvar nova senha
-        </Button>
-      </Form>
-    </LoginPagesContainer>
+                <i
+                  className={`bi ${showConfirmPassword ? 'bi-eye' : 'bi-eye-slash'} abs`}
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  style={{
+                    pointerEvents: !newPasswordOk ? 'none' : 'auto',
+                    position: 'absolute',
+                    right: '10px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: !newPasswordOk ? '#a1a0a0' : '#000',
+                    cursor: 'pointer',
+                    zIndex: 10,
+                  }}
+                ></i>
+              </InputGroup>
+            </Form.Group>
+          )}
+          {differentPassword && (
+            <p className='text-start ms-2 mb-3 fst-italic text-danger'>
+              As senhas devem ser iguais!
+            </p>
+          )}
+          {!newPasswordOk && (
+            <div className='ms-1'>
+              <p className='text-start text-primary fw-bold ms-2 mb-2 fst-italic'>
+                A senha deve conter:
+              </p>
+              <p
+                className='text-start ms-4 mb-0 fst-italic'
+                style={{
+                  color: newPassword.length >= 6 ? '#0c6b26' : '#dc3545',
+                }}
+              >
+                Entre 6 e 10 caracteres
+              </p>
+              <p
+                className='text-start ms-4 mb-0 fst-italic'
+                style={{ color: hasNumber ? '#0c6b26' : '#dc3545' }}
+              >
+                Um número
+              </p>
+              <p
+                className='text-start ms-4 mb-0 fst-italic'
+                style={{
+                  color: hasCapitalLetter ? '#0c6b26' : '#dc3545',
+                }}
+              >
+                Uma letra maiúscula
+              </p>
+              <p
+                className='text-start ms-4 mb-0 fst-italic'
+                style={{
+                  color: hasLowercaseLetter ? '#0c6b26' : '#dc3545',
+                }}
+              >
+                Uma letra minúscula
+              </p>
+              <p
+                className='text-start ms-4 fst-italic'
+                style={{
+                  color: hasSpecialCharacter ? '#0c6b26' : '#dc3545',
+                }}
+              >
+                Um caractere especial
+              </p>
+            </div>
+          )}
+
+          <Button className='w-100 text-tertiary mt-4 mb-3' type='submit' disabled={!canSave}>
+            Salvar nova senha
+          </Button>
+        </Form>
+      </LoginPagesContainer>
+      <PasswordReset show={show} handleClose={handleClose} message={message} buttonText={buttonText} />
+    </>
   ) : null
 }
 
